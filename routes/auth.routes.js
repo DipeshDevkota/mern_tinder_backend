@@ -7,7 +7,7 @@ const {userAuth}= require("../middlewares/auth")
 const crypto= require('crypto')
 const {validateSignUpData}= require("../utils/validate");
 const sendMail = require("../services/sendmail");
-
+const { initializeSocket } = require("../socket/socket.server");
 authroute.post("/signup", async (req, res) => {
     try {
         // Validate data
@@ -79,8 +79,12 @@ authroute.post('/login',async (req, res) => {
          console.log(token)
          //add the token to cookie and send the reponse back to the user
 
-         res.cookie("token",token)
-            res.send("Login Successful!!");
+         res.cookie("token",token,{
+            httpOnly: true,
+            secure: false, // Set to true if using HTTPS
+            sameSite: "strict",
+         })
+            res.send({user,token});
         } else {
             return res.status(400).json({ message: "Password is not correct" });
         }
@@ -92,11 +96,16 @@ authroute.post('/login',async (req, res) => {
 
 
 authroute.post('/logout', userAuth, async (req, res) => {
+    // const userId = req.user._id; // Get the user ID from the request object
+    // console.log(`LOgging out UserId:${userId}`)
+    
+//   disconnectUserSocket(userId)
     res.cookie("token", null, {
         expires: new Date(Date.now()), 
     });
     res.status(200).send("User logged out successfully!"); 
 });
+
 
 
 authroute.get('/users', async (req, res) => {
