@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173" ,// The frontend URL
+    origin: "https://mern-tinder-frontend-ondvnjuqy-dipeshdevkotas-projects.vercel.app/" ,// The frontend URL
     credentials: true, // Allow credentials such as cookies to be sent
 }));
 
